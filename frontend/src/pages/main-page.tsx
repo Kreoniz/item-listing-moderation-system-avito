@@ -1,6 +1,6 @@
-import { getAds } from "@/api/adsApi";
-import { ItemCard } from "@/components/ItemCard";
-import { SearchBar } from "@/components/SearchBar";
+import { getAds } from "@/api/ads-api";
+import { ItemCard } from "@/components/item-card";
+import { SearchBar } from "@/components/search-bar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounceCallback } from "@/shared/hooks";
 import { useQuery } from "@tanstack/react-query";
