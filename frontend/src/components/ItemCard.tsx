@@ -66,7 +66,11 @@ export function ItemCard({
       </div>
 
       <Button asChild className="self-end justify-self-end">
-        <NavLink to={`/item/${id}`} className="flex items-center gap-2">
+        <NavLink
+          prefetch="intent"
+          to={`/item/${id}`}
+          className="flex items-center gap-2"
+        >
           <span>Открыть</span> <ArrowRightIcon />
         </NavLink>
       </Button>
