@@ -1,9 +1,9 @@
 import "@/index.css";
-import { MainLayout } from "@/layouts/MainLayout";
-import { ItemPage } from "@/pages/ItemPage";
-import { MainPage } from "@/pages/MainPage.tsx";
-import { NotFoundPage } from "@/pages/NotFoundPage";
-import { StatsPage } from "@/pages/StatsPage";
+import { MainLayout } from "@/layouts/main-layout";
+import { ItemPage } from "@/pages/item-page";
+import { MainPage } from "@/pages/main-page.tsx";
+import { NotFoundPage } from "@/pages/not-found-page";
+import { StatsPage } from "@/pages/stats-page";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
