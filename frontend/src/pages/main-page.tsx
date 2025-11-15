@@ -1,6 +1,7 @@
 import { getAds } from "@/api/adsApi";
 import { ItemCard } from "@/components/ItemCard";
 import { SearchBar } from "@/components/SearchBar";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useDebounceCallback } from "@/shared/hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -32,7 +33,15 @@ export function MainPage() {
       />
 
       <div className="flex flex-col gap-4">
-        {data && data.ads.map((item) => <ItemCard key={item.id} {...item} />)}
+        {isLoading ? (
+          <div className="space-y-4">
+            {Array.from({ length: 10 }).map((_, i) => (
+              <Skeleton key={i} className="h-[175px] w-full rounded-2xl" />
+            ))}
+          </div>
+        ) : (
+          data?.ads.map((item) => <ItemCard key={item.id} {...item} />)
+        )}
       </div>
     </div>
   );
