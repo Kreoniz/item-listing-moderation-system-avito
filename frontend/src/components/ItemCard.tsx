@@ -2,7 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import type { Advertisement } from "@/types/ads";
+import type { Advertisement } from "@/shared/types";
 import { ArrowRightIcon } from "lucide-react";
 import { NavLink } from "react-router";
 

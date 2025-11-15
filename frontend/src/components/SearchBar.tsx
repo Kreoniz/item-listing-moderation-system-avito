@@ -1,5 +1,5 @@
 import { Input } from "@/components/ui/input";
-import type { DebouncedCallback } from "@/hooks";
+import type { DebouncedCallback } from "@/shared/hooks";
 
 interface SearchBarProps {
   onChange?: DebouncedCallback<[string]>;

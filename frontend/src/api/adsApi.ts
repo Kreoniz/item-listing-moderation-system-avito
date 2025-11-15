@@ -1,4 +1,4 @@
-import type { AdsListQuery, AdsListResponse } from "@/types/ads";
+import type { AdsListQuery, AdsListResponse } from "@/shared/types";
 import { api } from "./apiClient";
 
 export async function getAds(params?: Partial<AdsListQuery>) {
