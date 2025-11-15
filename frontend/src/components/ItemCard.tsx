@@ -28,12 +28,16 @@ export function ItemCard({
   priority,
   images,
 }: Partial<Advertisement>) {
-  const image = images?.[0];
+  const image = images?.[0] || "/placeholder-view.svg";
 
   return (
-    <Card className="rounded-(--card-radius) p-(--card-padding) [--card-padding:--spacing(3)] [--card-radius:var(--radius-3xl)] md:flex-row">
-      <div className="overflow-hidden rounded-[calc(var(--card-radius)-var(--card-padding))]">
-        <img className="h-full w-full object-cover" src={image} alt={title} />
+    <Card className="rounded-(--card-radius) p-(--card-padding) [--card-padding:--spacing(3)] [--card-radius:var(--radius-3xl)] sm:flex-row">
+      <div className="aspect-3/2 h-full w-full overflow-hidden rounded-[calc(var(--card-radius)-var(--card-padding))] sm:aspect-5/4 md:aspect-3/2 lg:basis-1/2">
+        <img
+          className="bg-image-placeholder h-full w-full object-cover"
+          src={image}
+          alt={title}
+        />
       </div>
 
       <div className="w-full space-y-2 py-1">

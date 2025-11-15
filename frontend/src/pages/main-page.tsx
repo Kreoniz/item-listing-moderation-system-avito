@@ -28,6 +28,7 @@ export function MainPage() {
       <h1 className="text-3xl font-bold">Главная страница</h1>
 
       <SearchBar
+        name="item-search"
         onChange={debouncedCallback}
         placeholder="Поиск по названию..."
       />
@@ -36,8 +37,15 @@ export function MainPage() {
         {isLoading ? (
           <div className="space-y-4">
             {Array.from({ length: 10 }).map((_, i) => (
-              <Skeleton key={i} className="h-[175px] w-full rounded-2xl" />
+              <Skeleton
+                key={i}
+                className="h-[600px] w-full rounded-2xl sm:h-[250px]"
+              />
             ))}
+          </div>
+        ) : error ? (
+          <div className="py-8 text-center font-bold text-red-500">
+            Ошибка загрузки данных
           </div>
         ) : (
           data?.ads.map((item) => <ItemCard key={item.id} {...item} />)

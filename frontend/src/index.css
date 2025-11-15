@@ -1,6 +1,10 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@theme inline {
+  --color-image-placeholder: #cccccc;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
