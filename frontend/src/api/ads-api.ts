@@ -19,7 +19,6 @@ export async function getAllAdsIds(
   params?: Omit<Partial<AdsListQuery>, "page" | "limit">,
   signal?: AbortSignal,
 ) {
-  // Fetch all matching ads with a large limit to get all IDs
   const { data } = await api.get<AdsListResponse>("ads", {
     params: { ...params, page: 1, limit: 10000 },
     signal,

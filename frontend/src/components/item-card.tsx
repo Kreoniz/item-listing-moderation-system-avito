@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { formatTimeString } from "@/lib/utils";
 import type { AdsListQuery, Advertisement } from "@/shared/types";
-import { ArrowRightIcon } from "lucide-react";
+import { ArrowRightIcon, CheckSquare, Square } from "lucide-react";
 import { useNavigate } from "react-router";
 
 interface ItemCardProps extends Partial<Advertisement> {
   adsIds?: string[];
   currentIndex?: number;
   filters?: Omit<Partial<AdsListQuery>, "page" | "limit">;
+  isSelected?: boolean;
+  onSelectChange?: (adId: string, selected: boolean) => void;
 }
 
 export function ItemCard({
@@ -26,9 +28,18 @@ export function ItemCard({
   adsIds,
   currentIndex,
   filters,
+  isSelected = false,
+  onSelectChange,
 }: ItemCardProps) {
   const navigate = useNavigate();
   const image = images?.[0] || "/placeholder-view.svg";
+
+  const handleCheckboxClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (id && onSelectChange) {
+      onSelectChange(String(id), !isSelected);
+    }
+  };
 
   const handleClick = () => {
     // Build URL with filter params
@@ -60,7 +71,24 @@ export function ItemCard({
   };
 
   return (
-    <Card className="rounded-(--card-radius) p-(--card-padding) [--card-padding:--spacing(3)] [--card-radius:var(--radius-3xl)] sm:flex-row">
+    <Card
+      className={`relative rounded-(--card-radius) p-(--card-padding) [--card-padding:--spacing(3)] [--card-radius:var(--radius-3xl)] sm:flex-row ${isSelected ? "ring-primary ring-2" : ""}`}
+    >
+      {onSelectChange && (
+        <div className="absolute top-2 left-2 z-10">
+          <button
+            type="button"
+            onClick={handleCheckboxClick}
+            className="bg-background/80 hover:bg-background rounded p-1 backdrop-blur-sm transition-colors"
+          >
+            {isSelected ? (
+              <CheckSquare className="text-primary h-5 w-5" />
+            ) : (
+              <Square className="h-5 w-5" />
+            )}
+          </button>
+        </div>
+      )}
       <div className="aspect-3/2 h-full w-full overflow-hidden rounded-[calc(var(--card-radius)-var(--card-padding))] sm:aspect-5/4 md:aspect-3/2 lg:basis-1/2">
         <img
           className="bg-image-placeholder h-full w-full object-cover"

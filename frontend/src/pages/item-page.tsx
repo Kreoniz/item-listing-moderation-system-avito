@@ -29,7 +29,7 @@ import { formatTimeString } from "@/lib/utils";
 import type { AdsListQuery, Advertisement } from "@/shared/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { StarIcon } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import {
   useLocation,
@@ -88,6 +88,8 @@ export function ItemPage() {
   } = useQuery<Advertisement>({
     queryKey: ["ad", id],
     queryFn: () => getAd(id!, abortController.current.signal),
+    refetchInterval: 30000,
+    refetchIntervalInBackground: true,
   });
 
   const { data: allAdsIds } = useQuery<string[]>({
@@ -101,9 +103,6 @@ export function ItemPage() {
       queryClient.invalidateQueries({ queryKey: ["ads"] });
       queryClient.invalidateQueries({ queryKey: ["ad", id] });
       queryClient.invalidateQueries({ queryKey: ["allAdsIds"] });
-      if (nextId) {
-        navigate(getNavigationUrl(nextId));
-      }
     },
   });
 
@@ -114,9 +113,6 @@ export function ItemPage() {
       queryClient.invalidateQueries({ queryKey: ["ads"] });
       queryClient.invalidateQueries({ queryKey: ["ad", id] });
       queryClient.invalidateQueries({ queryKey: ["allAdsIds"] });
-      if (nextId) {
-        navigate(getNavigationUrl(nextId));
-      }
     },
   });
 
@@ -127,9 +123,6 @@ export function ItemPage() {
       queryClient.invalidateQueries({ queryKey: ["ads"] });
       queryClient.invalidateQueries({ queryKey: ["ad", id] });
       queryClient.invalidateQueries({ queryKey: ["allAdsIds"] });
-      if (nextId) {
-        navigate(getNavigationUrl(nextId));
-      }
     },
   });
 
@@ -139,6 +132,20 @@ export function ItemPage() {
   const [rejectComment, setRejectComment] = useState("");
   const [reviseTemplate, setReviseTemplate] = useState("");
   const [reviseComment, setReviseComment] = useState("");
+  const rejectInputRef = useRef<HTMLInputElement>(null);
+  const reviseInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (rejectTemplate === "Другое" && rejectInputRef.current) {
+      rejectInputRef.current.focus();
+    }
+  }, [rejectTemplate]);
+
+  useEffect(() => {
+    if (reviseTemplate === "Другое" && reviseInputRef.current) {
+      reviseInputRef.current.focus();
+    }
+  }, [reviseTemplate]);
 
   const { adsIds: stateAdsIds, currentIndex: stateCurrentIndex } =
     (location.state as { adsIds?: string[]; currentIndex?: number }) || {};
@@ -245,9 +252,16 @@ export function ItemPage() {
   useHotkeys("5", () => setRejectTemplate(rejectionTemplates[4]), {
     enabled: showRejectDialog,
   });
-  useHotkeys("6", () => setRejectTemplate(rejectionTemplates[5]), {
-    enabled: showRejectDialog,
-  });
+  useHotkeys(
+    "6",
+    (e) => {
+      e.preventDefault();
+      setRejectTemplate(rejectionTemplates[5]);
+    },
+    {
+      enabled: showRejectDialog,
+    },
+  );
   useHotkeys("enter", handleRejectSubmit, {
     enabled: showRejectDialog && !!rejectTemplate,
   });
@@ -267,9 +281,16 @@ export function ItemPage() {
   useHotkeys("5", () => setReviseTemplate(rejectionTemplates[4]), {
     enabled: showReviseDialog,
   });
-  useHotkeys("6", () => setReviseTemplate(rejectionTemplates[5]), {
-    enabled: showReviseDialog,
-  });
+  useHotkeys(
+    "6",
+    (e) => {
+      e.preventDefault();
+      setReviseTemplate(rejectionTemplates[5]);
+    },
+    {
+      enabled: showReviseDialog,
+    },
+  );
   useHotkeys("enter", handleReviseSubmit, {
     enabled: showReviseDialog && !!reviseTemplate,
   });
@@ -288,10 +309,10 @@ export function ItemPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <Button
           variant="outline"
-          className="self-end justify-self-end"
+          className="w-full sm:w-auto"
           onClick={() => {
             const params = new URLSearchParams();
             if (filters.search) params.set("search", filters.search);
@@ -319,6 +340,7 @@ export function ItemPage() {
           <Button
             variant="outline"
             disabled={!prevId}
+            className="flex-1 sm:flex-initial"
             onClick={() => {
               if (prevId) {
                 navigate(getNavigationUrl(prevId));
@@ -330,6 +352,7 @@ export function ItemPage() {
           <Button
             variant="outline"
             disabled={!nextId}
+            className="flex-1 sm:flex-initial"
             onClick={() => {
               if (nextId) {
                 navigate(getNavigationUrl(nextId));
@@ -340,21 +363,23 @@ export function ItemPage() {
           </Button>
         </div>
       </div>
-      <h1 className="text-3xl font-bold">{ad.title}</h1>
+      <h1 className="text-2xl font-bold sm:text-3xl">{ad.title}</h1>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-6">
           <ImageGallery images={ad.images} />
           <div>
-            <h2 className="text-2xl font-semibold">Описание</h2>
-            <p className="text-muted-foreground">{ad.description}</p>
+            <h2 className="text-xl font-semibold sm:text-2xl">Описание</h2>
+            <p className="text-muted-foreground text-sm sm:text-base">
+              {ad.description}
+            </p>
           </div>
 
           <div>
-            <h2 className="mb-2 text-2xl font-semibold">
+            <h2 className="mb-2 text-xl font-semibold sm:text-2xl">
               Информация о продавце
             </h2>
-            <div className="text-muted-foreground space-y-2">
-              <div className="flex gap-2">
+            <div className="text-muted-foreground space-y-2 text-sm sm:text-base">
+              <div className="flex flex-wrap gap-2">
                 <p>{ad.seller.name}</p>
                 <p className="flex gap-1">
                   <StarIcon className="fill-[#ecc63c] stroke-[#ecc63c]" />
@@ -369,24 +394,24 @@ export function ItemPage() {
           </div>
         </div>
         <div className="space-y-6">
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-2 sm:gap-4">
             <Button
               variant="default"
-              className="bg-green-600 hover:cursor-pointer"
+              className="flex-1 bg-green-600 hover:cursor-pointer sm:flex-initial"
               onClick={() => approveMutation.mutate()}
             >
               Одобрить
             </Button>
             <Button
               variant="outline"
-              className="border-yellow-600 text-yellow-600 hover:cursor-pointer"
+              className="flex-1 border-yellow-600 text-yellow-600 hover:cursor-pointer sm:flex-initial"
               onClick={() => setShowReviseDialog(true)}
             >
               Вернуть на доработку
             </Button>
             <Button
               variant="destructive"
-              className="hover:cursor-pointer"
+              className="flex-1 hover:cursor-pointer sm:flex-initial"
               onClick={() => setShowRejectDialog(true)}
             >
               Отклонить
@@ -476,6 +501,7 @@ export function ItemPage() {
           </div>
           {rejectTemplate === "Другое" && (
             <Input
+              ref={rejectInputRef}
               placeholder="Введите дополнительный комментарий"
               value={rejectComment}
               onChange={(e) => setRejectComment(e.target.value)}
@@ -507,6 +533,7 @@ export function ItemPage() {
           </div>
           {reviseTemplate === "Другое" && (
             <Input
+              ref={reviseInputRef}
               placeholder="Введите дополнительный комментарий"
               value={reviseComment}
               onChange={(e) => setReviseComment(e.target.value)}
