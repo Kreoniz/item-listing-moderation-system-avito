@@ -145,11 +145,6 @@ export function MainPage() {
     setSearchParams({}, { replace: true });
   };
 
-  const [previousPendingAds, setPreviousPendingAds] = useState<Set<string>>(
-    new Set(),
-  );
-  const [newAdsCount, setNewAdsCount] = useState<number>(0);
-
   const { data, error, isLoading, isFetching } = useQuery({
     queryKey: [
       "ads",
@@ -183,26 +178,6 @@ export function MainPage() {
 
   const pagination = data?.pagination;
   const ads = data?.ads;
-
-  useEffect(() => {
-    if (ads) {
-      const currentPendingAds = new Set(
-        ads.filter((ad) => ad.status === "pending").map((ad) => String(ad.id)),
-      );
-
-      if (previousPendingAds.size > 0) {
-        const newAds = Array.from(currentPendingAds).filter(
-          (id) => !previousPendingAds.has(id),
-        );
-        if (newAds.length > 0) {
-          setNewAdsCount(newAds.length);
-          setTimeout(() => setNewAdsCount(0), 5000);
-        }
-      }
-
-      setPreviousPendingAds(currentPendingAds);
-    }
-  }, [ads]);
 
   useHotkeys("slash", (e) => {
     e.preventDefault();
@@ -428,11 +403,6 @@ export function MainPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-3xl font-bold tracking-tight">Главная страница</h1>
-        {newAdsCount > 0 && (
-          <div className="bg-primary text-primary-foreground rounded-full px-3 py-1 text-sm font-medium">
-            Новых объявлений: +{newAdsCount}
-          </div>
-        )}
       </div>
 
       {isFetching && (
