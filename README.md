@@ -25,7 +25,7 @@
 #### Запуск в production режиме
 
 ```bash
-docker-compose -f docker-compose.prod.yml up --build
+docker compose -f docker-compose.prod.yml up --build
 ```
 
 После запуска:
