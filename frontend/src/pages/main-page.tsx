@@ -246,6 +246,15 @@ export function MainPage() {
               {...item}
               adsIds={ads.map((ad) => String(ad.id))}
               currentIndex={index}
+              filters={{
+                search,
+                status: selectedStatuses,
+                categoryId: selectedCategoryId,
+                minPrice,
+                maxPrice,
+                sortBy,
+                sortOrder,
+              }}
             />
           ))
         )}

@@ -3,9 +3,16 @@ import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
-import type { Advertisement } from "@/shared/types";
+import { formatTimeString } from "@/lib/utils";
+import type { AdsListQuery, Advertisement } from "@/shared/types";
 import { ArrowRightIcon } from "lucide-react";
-import { NavLink } from "react-router";
+import { useNavigate } from "react-router";
+
+interface ItemCardProps extends Partial<Advertisement> {
+  adsIds?: string[];
+  currentIndex?: number;
+  filters?: Omit<Partial<AdsListQuery>, "page" | "limit">;
+}
 
 export function ItemCard({
   id,
@@ -16,8 +23,41 @@ export function ItemCard({
   status,
   priority,
   images,
-}: Partial<Advertisement>) {
+  adsIds,
+  currentIndex,
+  filters,
+}: ItemCardProps) {
+  const navigate = useNavigate();
   const image = images?.[0] || "/placeholder-view.svg";
+
+  const handleClick = () => {
+    // Build URL with filter params
+    const params = new URLSearchParams();
+    if (filters?.search) params.set("search", filters.search);
+    if (filters?.status && filters.status.length > 0)
+      params.set("status", filters.status.join(","));
+    if (filters?.categoryId !== undefined)
+      params.set("category", String(filters.categoryId));
+    if (filters?.minPrice !== undefined)
+      params.set("minPrice", String(filters.minPrice));
+    if (filters?.maxPrice !== undefined)
+      params.set("maxPrice", String(filters.maxPrice));
+    if (filters?.sortBy && filters.sortBy !== "createdAt")
+      params.set("sortBy", filters.sortBy);
+    if (filters?.sortOrder && filters.sortOrder !== "desc")
+      params.set("sortOrder", filters.sortOrder);
+
+    const queryString = params.toString();
+    const url = `/item/${id}${queryString ? `?${queryString}` : ""}`;
+
+    navigate(url, {
+      state: {
+        adsIds,
+        currentIndex,
+        filters,
+      },
+    });
+  };
 
   return (
     <Card className="rounded-(--card-radius) p-(--card-padding) [--card-padding:--spacing(3)] [--card-radius:var(--radius-3xl)] sm:flex-row">
@@ -41,27 +81,15 @@ export function ItemCard({
         </div>
 
         <div className="text-muted-foreground text-xs">
-          {createdAt &&
-            new Date(createdAt).toLocaleString("ru-RU", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-              second: "2-digit",
-              hour12: false,
-            })}
+          {createdAt && formatTimeString(createdAt)}
         </div>
       </div>
 
-      <Button asChild className="self-end justify-self-end">
-        <NavLink
-          prefetch="intent"
-          to={`/item/${id}`}
-          className="flex items-center gap-2"
-        >
-          <span>Открыть</span> <ArrowRightIcon />
-        </NavLink>
+      <Button
+        className="flex items-center gap-2 self-end justify-self-end"
+        onClick={handleClick}
+      >
+        <span>Открыть</span> <ArrowRightIcon />
       </Button>
     </Card>
   );
