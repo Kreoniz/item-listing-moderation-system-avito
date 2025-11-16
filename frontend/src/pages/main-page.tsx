@@ -5,10 +5,11 @@ import {
   PriceRangeFilter,
   StatusFilter,
 } from "@/components/item-filters";
+import { SortFilter } from "@/components/item-sortings";
 import { SearchBar } from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { AdStatus } from "@/shared/types";
+import type { AdStatus, SortByField, SortOrder } from "@/shared/types";
 import { useQuery } from "@tanstack/react-query";
 import { XIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
@@ -49,6 +50,22 @@ export function MainPage() {
       ? Number(searchParams.get("maxPrice"))
       : undefined,
   );
+  const [sortBy, setSortBy] = useState<SortByField>(
+    (): SortByField =>
+      (searchParams.get("sortBy") as typeof sortBy) || "createdAt",
+  );
+  const [sortOrder, setSortOrder] = useState<SortOrder>(
+    (): SortOrder =>
+      (searchParams.get("sortOrder") as typeof sortOrder) || "desc",
+  );
+
+  function handleSortChange(
+    newSortBy: typeof sortBy,
+    newSortOrder: typeof sortOrder,
+  ) {
+    setSortBy(newSortBy);
+    setSortOrder(newSortOrder);
+  }
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -61,6 +78,9 @@ export function MainPage() {
     if (minPrice !== undefined) params.set("minPrice", String(minPrice));
     if (maxPrice !== undefined) params.set("maxPrice", String(maxPrice));
 
+    if (sortBy !== "createdAt") params.set("sortBy", sortBy);
+    if (sortOrder !== "desc") params.set("sortOrder", sortOrder);
+
     setSearchParams(params, { replace: true });
   }, [
     search,
@@ -68,6 +88,8 @@ export function MainPage() {
     selectedCategoryId,
     minPrice,
     maxPrice,
+    sortBy,
+    sortOrder,
     setSearchParams,
   ]);
 
@@ -75,19 +97,29 @@ export function MainPage() {
     setSearch(value);
   }, []);
 
-  const handleReset = useCallback(() => {
+  const handleReset = () => {
     setSearch("");
     setSelectedStatuses([]);
     setSelectedCategoryId(undefined);
     setMinPrice(undefined);
     setMaxPrice(undefined);
+    setSortBy("createdAt");
+    setSortOrder("desc");
     setSearchParams({}, { replace: true });
-  }, [setSearchParams]);
+  };
 
   const { data, error, isLoading } = useQuery({
     queryKey: [
       "ads",
-      { search, selectedStatuses, selectedCategoryId, minPrice, maxPrice },
+      {
+        search,
+        selectedStatuses,
+        selectedCategoryId,
+        minPrice,
+        maxPrice,
+        sortBy,
+        sortOrder,
+      },
     ],
     queryFn: () =>
       getAds({
@@ -96,6 +128,8 @@ export function MainPage() {
         categoryId: selectedCategoryId,
         minPrice,
         maxPrice,
+        sortBy,
+        sortOrder,
       }),
   });
 
@@ -104,7 +138,9 @@ export function MainPage() {
     selectedStatuses.length > 0 ||
     selectedCategoryId !== undefined ||
     minPrice !== undefined ||
-    maxPrice !== undefined;
+    maxPrice !== undefined ||
+    sortBy !== "createdAt" ||
+    sortOrder !== "desc";
 
   return (
     <div className="space-y-6">
@@ -144,6 +180,12 @@ export function MainPage() {
               onMaxChange={setMaxPrice}
             />
           </div>
+
+          <SortFilter
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+            onChange={handleSortChange}
+          />
         </div>
 
         <Button

@@ -4,6 +4,9 @@ import type { ID, Pagination } from "./shared";
 export type AdStatus = "pending" | "approved" | "rejected" | "draft";
 export type AdPriority = "normal" | "urgent";
 
+export type SortByField = "createdAt" | "price" | "priority";
+export type SortOrder = "asc" | "desc";
+
 export type ModerationAction = "approved" | "rejected" | "requestChanges";
 
 export type ModerationReason =
@@ -55,8 +58,8 @@ export interface AdsListQuery {
   maxPrice?: number;
   search?: string;
 
-  sortBy?: "createdAt" | "price" | "priority";
-  sortOrder?: "asc" | "desc";
+  sortBy?: SortByField;
+  sortOrder?: SortOrder;
 }
 
 export interface AdsListResponse {
