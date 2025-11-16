@@ -4,7 +4,7 @@ import {
   CategoryFilter,
   PriceRangeFilter,
   StatusFilter,
-} from "@/components/item-filters";
+} from "@/components/filters";
 import { SortFilter } from "@/components/item-sortings";
 import { SearchBar } from "@/components/search-bar";
 import { Button } from "@/components/ui/button";

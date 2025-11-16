@@ -4,6 +4,7 @@ import {
   getDecisionsChart,
   getStatsSummary,
 } from "@/api/stats-api";
+import { CustomBarChartTooltip, StatCard } from "@/components/stats";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,8 +90,6 @@ export function StatsPage() {
     queryFn: ({ signal }) => getCategoriesChart({ period }, signal),
   });
 
-  const isLoading =
-    summaryLoading || activityLoading || decisionsLoading || categoriesLoading;
   const error =
     summaryError || activityError || decisionsError || categoriesError;
 
@@ -285,7 +284,7 @@ export function StatsPage() {
                     fill="#8884d8"
                     dataKey="value"
                     label={({ name, percent }) =>
-                      `${name} ${(percent * 100).toFixed(0)}%`
+                      `${name} ${((percent || 0) * 100).toFixed(0)}%`
                     }
                   >
                     {prepareDecisionsData(decisions).map((entry, index) => (
@@ -348,70 +347,5 @@ export function StatsPage() {
         </Card>
       </div>
     </div>
-  );
-}
-
-function CustomBarChartTooltip({ active, payload, label }: any) {
-  if (!active || !payload || !payload.length) return null;
-
-  return (
-    <div className="bg-popover text-popover-foreground rounded-md border p-2 shadow">
-      <div className="font-semibold">{label}</div>
-      <div>Кол-во: {payload[0].value}</div>
-    </div>
-  );
-}
-
-interface StatCardProps {
-  title: string;
-  value: string | number;
-  icon: React.ReactNode;
-  loading?: boolean;
-  badge?: React.ReactNode;
-  trend?: {
-    direction: "up" | "down" | "neutral";
-    value: string;
-  };
-}
-
-function StatCard({
-  title,
-  value,
-  icon,
-  loading,
-  badge,
-  trend,
-}: StatCardProps) {
-  return (
-    <Card className="relative overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-muted-foreground text-sm font-medium">
-          {title}
-        </CardTitle>
-        {icon}
-      </CardHeader>
-      <CardContent>
-        {loading ? (
-          <Skeleton className="h-8 w-24" />
-        ) : (
-          <>
-            <div className="text-2xl font-bold">{value}</div>
-            <div className="mt-2 flex items-center justify-between">
-              {trend && (
-                <p className="text-muted-foreground text-xs">
-                  {trend.direction === "up"
-                    ? "↑"
-                    : trend.direction === "down"
-                      ? "↓"
-                      : "→"}{" "}
-                  {trend.value}
-                </p>
-              )}
-              {badge}
-            </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
   );
 }

@@ -42,7 +42,6 @@ export function ItemCard({
   };
 
   const handleClick = () => {
-    // Build URL with filter params
     const params = new URLSearchParams();
     if (filters?.search) params.set("search", filters.search);
     if (filters?.status && filters.status.length > 0)

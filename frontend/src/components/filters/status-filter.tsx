@@ -8,21 +8,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { AdStatus } from "@/shared/types";
 import { FilterIcon } from "lucide-react";
-
-interface Category {
-  id: number;
-  name: string;
-}
 
 interface StatusFilterProps {
   selectedStatuses: AdStatus[];
@@ -103,91 +90,3 @@ export function StatusFilter({
   );
 }
 
-interface CategoryFilterProps {
-  categories: Category[];
-  selectedCategoryId: number | undefined;
-  onChange: (categoryId: number | undefined) => void;
-}
-
-export function CategoryFilter({
-  categories,
-  selectedCategoryId,
-  onChange,
-}: CategoryFilterProps) {
-  return (
-    <div className="space-y-1.5">
-      <label className="text-muted-foreground text-xs font-medium">
-        Категория
-      </label>
-      <Select
-        value={selectedCategoryId?.toString() || "all"}
-        onValueChange={(value) =>
-          onChange(value === "all" ? undefined : Number(value))
-        }
-      >
-        <SelectTrigger className="w-full hover:cursor-pointer">
-          <SelectValue placeholder="Выберите категорию" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem className="hover:cursor-pointer" value="all">
-            Все категории
-          </SelectItem>
-          {categories.map((cat) => (
-            <SelectItem
-              className="hover:cursor-pointer"
-              key={cat.id}
-              value={cat.id.toString()}
-            >
-              {cat.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    </div>
-  );
-}
-
-interface PriceRangeFilterProps {
-  minPrice: number | undefined;
-  maxPrice: number | undefined;
-  onMinChange: (value: number | undefined) => void;
-  onMaxChange: (value: number | undefined) => void;
-}
-
-export function PriceRangeFilter({
-  minPrice,
-  maxPrice,
-  onMinChange,
-  onMaxChange,
-}: PriceRangeFilterProps) {
-  return (
-    <div className="space-y-1.5">
-      <label className="text-muted-foreground text-xs font-medium">
-        Цена, ₽
-      </label>
-      <div className="flex items-center gap-2">
-        <Input
-          type="number"
-          placeholder="От"
-          min={0}
-          value={minPrice ?? ""}
-          onChange={(e) =>
-            onMinChange(e.target.value ? Number(e.target.value) : undefined)
-          }
-          className="w-24"
-        />
-        <span className="text-muted-foreground">—</span>
-        <Input
-          type="number"
-          placeholder="До"
-          min={0}
-          value={maxPrice ?? ""}
-          onChange={(e) =>
-            onMaxChange(e.target.value ? Number(e.target.value) : undefined)
-          }
-          className="w-24"
-        />
-      </div>
-    </div>
-  );
-}
