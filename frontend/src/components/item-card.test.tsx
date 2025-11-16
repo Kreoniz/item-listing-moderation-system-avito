@@ -15,7 +15,7 @@ vi.mock("react-router", async () => {
 });
 
 const mockAd: Partial<Advertisement> = {
-  id: "1",
+  id: 1,
   title: "Тестовое объявление",
   price: 1000,
   category: "Электроника",
