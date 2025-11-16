@@ -64,7 +64,7 @@ export function ImageGallery({ images }: ImageGalleryProps) {
         </div>
       )}
 
-      <div className="relative">
+      <div className="relative space-y-2">
         <img
           src={images[currentImgIndex]}
           alt={`Image ${currentImgIndex + 1}`}
