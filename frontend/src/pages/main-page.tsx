@@ -18,12 +18,12 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getPaginationItems } from "@/lib/pagination";
+import { getPaginationItems } from "@/lib/utils";
 import type { AdStatus, SortByField, SortOrder } from "@/shared/types";
 import { CATEGORIES, PAGE_LIMIT } from "@/shared/types/consts";
 import { useQuery } from "@tanstack/react-query";
 import { XIcon } from "lucide-react";
-import { useCallback, useEffect, useEffectEvent, useState } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 
 export function MainPage() {
@@ -140,13 +140,17 @@ export function MainPage() {
   const pagination = data?.pagination;
   const ads = data?.ads;
 
-  const resetPage = useEffectEvent(() => {
-    setPage(1);
-  });
-
   useEffect(() => {
-    resetPage();
-  }, [data]);
+    startTransition(() => setPage(1));
+  }, [
+    search,
+    selectedStatuses,
+    selectedCategoryId,
+    minPrice,
+    maxPrice,
+    sortBy,
+    sortOrder,
+  ]);
 
   const hasActiveFilters =
     search ||
@@ -236,7 +240,14 @@ export function MainPage() {
             Ошибка загрузки данных
           </div>
         ) : (
-          ads?.map((item) => <ItemCard key={item.id} {...item} />)
+          ads?.map((item, index) => (
+            <ItemCard
+              key={item.id}
+              {...item}
+              adsIds={ads.map((ad) => String(ad.id))}
+              currentIndex={index}
+            />
+          ))
         )}
       </div>
 
@@ -254,17 +265,19 @@ export function MainPage() {
             </PaginationItem>
 
             {getPaginationItems(page, pagination?.totalPages || 1).map(
-              (item, idx) => {
+              (item) => {
+                const key = typeof item === "string" ? item : `page-${item}`;
+
                 if (item === "left-ellipsis" || item === "right-ellipsis") {
                   return (
-                    <PaginationItem key={idx}>
+                    <PaginationItem key={key}>
                       <PaginationEllipsis />
                     </PaginationItem>
                   );
                 }
 
                 return (
-                  <PaginationItem key={item}>
+                  <PaginationItem key={key}>
                     <PaginationLink
                       className="hover:cursor-pointer"
                       isActive={item === page}
