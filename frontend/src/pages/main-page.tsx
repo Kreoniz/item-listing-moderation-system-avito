@@ -8,26 +8,27 @@ import {
 import { SortFilter } from "@/components/item-sortings";
 import { SearchBar } from "@/components/search-bar";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getPaginationItems } from "@/lib/pagination";
 import type { AdStatus, SortByField, SortOrder } from "@/shared/types";
+import { CATEGORIES, PAGE_LIMIT } from "@/shared/types/consts";
 import { useQuery } from "@tanstack/react-query";
 import { XIcon } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useEffectEvent, useState } from "react";
 import { useSearchParams } from "react-router";
-
-const categories = [
-  { id: 0, name: "Электроника" },
-  { id: 1, name: "Недвижимость" },
-  { id: 2, name: "Транспорт" },
-  { id: 3, name: "Работа" },
-  { id: 4, name: "Услуги" },
-  { id: 5, name: "Животные" },
-  { id: 6, name: "Мода" },
-  { id: 7, name: "Детское" },
-];
 
 export function MainPage() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState(1);
 
   const [search, setSearch] = useState(() => searchParams.get("search") || "");
   const [selectedStatuses, setSelectedStatuses] = useState<AdStatus[]>(
@@ -119,6 +120,8 @@ export function MainPage() {
         maxPrice,
         sortBy,
         sortOrder,
+        page,
+        limit: PAGE_LIMIT,
       },
     ],
     queryFn: () =>
@@ -130,8 +133,20 @@ export function MainPage() {
         maxPrice,
         sortBy,
         sortOrder,
+        page,
+        limit: PAGE_LIMIT,
       }),
   });
+  const pagination = data?.pagination;
+  const ads = data?.ads;
+
+  const resetPage = useEffectEvent(() => {
+    setPage(1);
+  });
+
+  useEffect(() => {
+    resetPage();
+  }, [data]);
 
   const hasActiveFilters =
     search ||
@@ -166,7 +181,7 @@ export function MainPage() {
 
           <div className="w-48">
             <CategoryFilter
-              categories={categories}
+              categories={CATEGORIES}
               selectedCategoryId={selectedCategoryId}
               onChange={setSelectedCategoryId}
             />
@@ -202,7 +217,7 @@ export function MainPage() {
 
       {data && (
         <p className="text-muted-foreground text-sm">
-          Найдено объявлений: {data.pagination.totalItems}
+          Найдено объявлений: {pagination?.totalItems}
         </p>
       )}
 
@@ -221,9 +236,63 @@ export function MainPage() {
             Ошибка загрузки данных
           </div>
         ) : (
-          data?.ads.map((item) => <ItemCard key={item.id} {...item} />)
+          ads?.map((item) => <ItemCard key={item.id} {...item} />)
         )}
       </div>
+
+      {ads && ads?.length > 0 && (
+        <Pagination>
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                className="hover:cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (page > 1) setPage(page - 1);
+                }}
+              />
+            </PaginationItem>
+
+            {getPaginationItems(page, pagination?.totalPages || 1).map(
+              (item, idx) => {
+                if (item === "left-ellipsis" || item === "right-ellipsis") {
+                  return (
+                    <PaginationItem key={idx}>
+                      <PaginationEllipsis />
+                    </PaginationItem>
+                  );
+                }
+
+                return (
+                  <PaginationItem key={item}>
+                    <PaginationLink
+                      className="hover:cursor-pointer"
+                      isActive={item === page}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setPage(Number(item));
+                      }}
+                    >
+                      {item}
+                    </PaginationLink>
+                  </PaginationItem>
+                );
+              },
+            )}
+
+            <PaginationItem>
+              <PaginationNext
+                className="hover:cursor-pointer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!pagination?.totalPages) return;
+                  if (page < pagination?.totalPages) setPage(page + 1);
+                }}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }
