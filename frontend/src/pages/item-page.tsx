@@ -187,23 +187,33 @@ export function ItemPage() {
 
   const handleRejectSubmit = () => {
     if (rejectTemplate) {
+      if (rejectTemplate === "Другое" && !rejectComment.trim()) {
+        return;
+      }
       const body = {
         reason: rejectTemplate,
         comment: rejectTemplate === "Другое" ? rejectComment : undefined,
       };
       rejectMutation.mutate(body);
       setShowRejectDialog(false);
+      setRejectTemplate("");
+      setRejectComment("");
     }
   };
 
   const handleReviseSubmit = () => {
     if (reviseTemplate) {
+      if (reviseTemplate === "Другое" && !reviseComment.trim()) {
+        return;
+      }
       const body = {
         reason: reviseTemplate,
         comment: reviseTemplate === "Другое" ? reviseComment : undefined,
       };
       requestChangesMutation.mutate(body);
       setShowReviseDialog(false);
+      setReviseTemplate("");
+      setReviseComment("");
     }
   };
 
@@ -258,9 +268,19 @@ export function ItemPage() {
       enabled: showRejectDialog,
     },
   );
-  useHotkeys("enter", handleRejectSubmit, {
-    enabled: showRejectDialog && !!rejectTemplate,
-  });
+  useHotkeys(
+    "enter",
+    (e) => {
+      e.preventDefault();
+      handleRejectSubmit();
+    },
+    {
+      enabled:
+        showRejectDialog &&
+        !!rejectTemplate &&
+        !(rejectTemplate === "Другое" && !rejectComment.trim()),
+    },
+  );
 
   useHotkeys("1", () => setReviseTemplate(rejectionTemplates[0]), {
     enabled: showReviseDialog,
@@ -287,9 +307,19 @@ export function ItemPage() {
       enabled: showReviseDialog,
     },
   );
-  useHotkeys("enter", handleReviseSubmit, {
-    enabled: showReviseDialog && !!reviseTemplate,
-  });
+  useHotkeys(
+    "enter",
+    (e) => {
+      e.preventDefault();
+      handleReviseSubmit();
+    },
+    {
+      enabled:
+        showReviseDialog &&
+        !!reviseTemplate &&
+        !(reviseTemplate === "Другое" && !reviseComment.trim()),
+    },
+  );
 
   if (isLoading) {
     return <Skeleton className="h-[80vh] w-full" />;
@@ -501,10 +531,21 @@ export function ItemPage() {
               placeholder="Введите дополнительный комментарий"
               value={rejectComment}
               onChange={(e) => setRejectComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !rejectComment.trim()) {
+                  e.preventDefault();
+                }
+              }}
             />
           )}
           <DialogFooter>
-            <Button disabled={!rejectTemplate} onClick={handleRejectSubmit}>
+            <Button
+              disabled={
+                !rejectTemplate ||
+                (rejectTemplate === "Другое" && !rejectComment.trim())
+              }
+              onClick={handleRejectSubmit}
+            >
               Отправить
             </Button>
           </DialogFooter>
@@ -533,10 +574,21 @@ export function ItemPage() {
               placeholder="Введите дополнительный комментарий"
               value={reviseComment}
               onChange={(e) => setReviseComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !reviseComment.trim()) {
+                  e.preventDefault();
+                }
+              }}
             />
           )}
           <DialogFooter>
-            <Button disabled={!reviseTemplate} onClick={handleReviseSubmit}>
+            <Button
+              disabled={
+                !reviseTemplate ||
+                (reviseTemplate === "Другое" && !reviseComment.trim())
+              }
+              onClick={handleReviseSubmit}
+            >
               Отправить
             </Button>
           </DialogFooter>

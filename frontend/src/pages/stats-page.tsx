@@ -7,7 +7,14 @@ import {
 import { CustomBarChartTooltip, StatCard } from "@/components/stats";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Select,
   SelectContent,
@@ -16,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { exportToCSV } from "@/lib/export-utils";
 import type { ActivityData, DecisionsData } from "@/shared/types";
 import { useQuery } from "@tanstack/react-query";
 import { format, parseISO } from "date-fns";
@@ -24,6 +32,7 @@ import {
   AlertCircle,
   CheckCircle,
   Clock,
+  Download,
   Package,
   TrendingUp,
   XCircle,
@@ -149,19 +158,49 @@ export function StatsPage() {
           </p>
         </div>
 
-        <Select
-          value={period}
-          onValueChange={(value: Period) => setPeriod(value)}
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Выберите период" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="today">Сегодня</SelectItem>
-            <SelectItem value="week">Последние 7 дней</SelectItem>
-            <SelectItem value="month">Последние 30 дней</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          <Select
+            value={period}
+            onValueChange={(value: Period) => setPeriod(value)}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Выберите период" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">Сегодня</SelectItem>
+              <SelectItem value="week">Последние 7 дней</SelectItem>
+              <SelectItem value="month">Последние 30 дней</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Download className="h-4 w-4" />
+                <span className="sr-only">Экспорт данных</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  if (summary && activity && decisions && categories) {
+                    exportToCSV(
+                      summary,
+                      activity,
+                      decisions,
+                      categories,
+                      getPeriodLabel(period),
+                    );
+                  }
+                }}
+                disabled={!summary || !activity || !decisions || !categories}
+              >
+                Экспорт в CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem disabled>Экспорт в PDF</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       {error && (

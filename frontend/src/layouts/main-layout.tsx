@@ -1,3 +1,4 @@
+import { HotkeysInfo } from "@/components/hotkeys-info";
 import { ModeToggle } from "@/components/mode-toggle";
 import { NavLink, Outlet } from "react-router";
 
@@ -8,6 +9,7 @@ export function MainLayout() {
         <div className="text-xl font-bold">Модероратор</div>
 
         <div className="flex items-center gap-4">
+          <HotkeysInfo />
           <ModeToggle />
 
           <ul className="flex gap-2">

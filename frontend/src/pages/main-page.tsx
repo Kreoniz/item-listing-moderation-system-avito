@@ -266,6 +266,9 @@ export function MainPage() {
 
   const handleBulkReject = () => {
     if (selectedAds.size > 0 && bulkRejectTemplate) {
+      if (bulkRejectTemplate === "Другое" && !bulkRejectComment.trim()) {
+        return;
+      }
       bulkRejectMutation.mutate({
         ids: Array.from(selectedAds),
         reason: bulkRejectTemplate,
@@ -277,6 +280,9 @@ export function MainPage() {
 
   const handleBulkRevise = () => {
     if (selectedAds.size > 0 && bulkReviseTemplate) {
+      if (bulkReviseTemplate === "Другое" && !bulkReviseComment.trim()) {
+        return;
+      }
       bulkReviseMutation.mutate({
         ids: Array.from(selectedAds),
         reason: bulkReviseTemplate,
@@ -326,13 +332,19 @@ export function MainPage() {
   useHotkeys(
     "enter",
     (e) => {
-      if (bulkRejectTemplate) {
+      if (
+        bulkRejectTemplate &&
+        !(bulkRejectTemplate === "Другое" && !bulkRejectComment.trim())
+      ) {
         e.preventDefault();
         handleBulkReject();
       }
     },
     {
-      enabled: showBulkRejectDialog && !!bulkRejectTemplate,
+      enabled:
+        showBulkRejectDialog &&
+        !!bulkRejectTemplate &&
+        !(bulkRejectTemplate === "Другое" && !bulkRejectComment.trim()),
     },
   );
 
@@ -364,13 +376,19 @@ export function MainPage() {
   useHotkeys(
     "enter",
     (e) => {
-      if (bulkReviseTemplate) {
+      if (
+        bulkReviseTemplate &&
+        !(bulkReviseTemplate === "Другое" && !bulkReviseComment.trim())
+      ) {
         e.preventDefault();
         handleBulkRevise();
       }
     },
     {
-      enabled: showBulkReviseDialog && !!bulkReviseTemplate,
+      enabled:
+        showBulkReviseDialog &&
+        !!bulkReviseTemplate &&
+        !(bulkReviseTemplate === "Другое" && !bulkReviseComment.trim()),
     },
   );
 
@@ -631,10 +649,21 @@ export function MainPage() {
               placeholder="Введите дополнительный комментарий"
               value={bulkRejectComment}
               onChange={(e) => setBulkRejectComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !bulkRejectComment.trim()) {
+                  e.preventDefault();
+                }
+              }}
             />
           )}
           <DialogFooter>
-            <Button disabled={!bulkRejectTemplate} onClick={handleBulkReject}>
+            <Button
+              disabled={
+                !bulkRejectTemplate ||
+                (bulkRejectTemplate === "Другое" && !bulkRejectComment.trim())
+              }
+              onClick={handleBulkReject}
+            >
               Отправить
             </Button>
           </DialogFooter>
@@ -669,10 +698,21 @@ export function MainPage() {
               placeholder="Введите дополнительный комментарий"
               value={bulkReviseComment}
               onChange={(e) => setBulkReviseComment(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !bulkReviseComment.trim()) {
+                  e.preventDefault();
+                }
+              }}
             />
           )}
           <DialogFooter>
-            <Button disabled={!bulkReviseTemplate} onClick={handleBulkRevise}>
+            <Button
+              disabled={
+                !bulkReviseTemplate ||
+                (bulkReviseTemplate === "Другое" && !bulkReviseComment.trim())
+              }
+              onClick={handleBulkRevise}
+            >
               Отправить
             </Button>
           </DialogFooter>
