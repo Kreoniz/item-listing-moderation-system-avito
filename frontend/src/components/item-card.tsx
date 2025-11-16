@@ -1,22 +1,11 @@
+import { PriorityBadge } from "@/components/priority-badge";
+import { StatusBadge } from "@/components/status-badge";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import type { Advertisement } from "@/shared/types";
 import { ArrowRightIcon } from "lucide-react";
 import { NavLink } from "react-router";
-
-const statusMap = {
-  pending: "На модерации",
-  approved: "Одобрено",
-  rejected: "Отклонено",
-  draft: "Черновик",
-};
-
-const priorityMap = {
-  urgent: "Срочно",
-  normal: "Обычное",
-};
 
 export function ItemCard({
   id,
@@ -75,36 +64,5 @@ export function ItemCard({
         </NavLink>
       </Button>
     </Card>
-  );
-}
-
-function StatusBadge({ status }: { status: Advertisement["status"] }) {
-  return (
-    <Badge
-      className={cn(
-        "rounded-full px-2 py-1 text-xs",
-        status === "approved" && "bg-green-100 text-green-700",
-        status === "rejected" && "bg-red-100 text-red-700",
-        status === "pending" && "bg-yellow-100 text-yellow-700",
-        status === "draft" && "bg-gray-100 text-gray-600",
-      )}
-    >
-      {statusMap[status]}
-    </Badge>
-  );
-}
-
-function PriorityBadge({ priority }: { priority: Advertisement["priority"] }) {
-  return (
-    <span
-      className={cn(
-        "rounded-full px-2 py-1 text-xs",
-        priority === "urgent"
-          ? "bg-red-200 text-red-800"
-          : "bg-blue-100 text-blue-700",
-      )}
-    >
-      {priorityMap[priority]}
-    </span>
   );
 }
