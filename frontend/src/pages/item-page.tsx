@@ -207,10 +207,6 @@ export function ItemPage() {
     }
   };
 
-  useHotkeys("r", () => {
-    console.log("pressed R");
-  });
-
   useHotkeys("a, shift+a", () => {
     if (!showRejectDialog && !showReviseDialog) {
       approveMutation.mutate();
@@ -226,12 +222,12 @@ export function ItemPage() {
       setShowReviseDialog(true);
     }
   });
-  useHotkeys("arrowleft", () => {
+  useHotkeys("arrowleft, q", () => {
     if (prevId && !showRejectDialog && !showReviseDialog) {
       navigate(getNavigationUrl(prevId));
     }
   });
-  useHotkeys("arrowright", () => {
+  useHotkeys("arrowright, e", () => {
     if (nextId && !showRejectDialog && !showReviseDialog) {
       navigate(getNavigationUrl(nextId));
     }

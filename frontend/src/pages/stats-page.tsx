@@ -134,11 +134,9 @@ export function StatsPage() {
 
   const prepareCategoriesData = (data?: Record<string, number>) => {
     if (!data) return [];
-    const newData = Object.entries(data)
+    return Object.entries(data)
       .sort(([, a], [, b]) => b - a)
       .map(([name, value]) => ({ name, value }));
-    console.log(newData);
-    return newData;
   };
 
   return (

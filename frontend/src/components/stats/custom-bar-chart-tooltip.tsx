@@ -8,4 +8,3 @@ export function CustomBarChartTooltip({ active, payload, label }: any) {
     </div>
   );
 }
-

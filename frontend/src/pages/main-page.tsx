@@ -1,10 +1,10 @@
 import { approveAd, getAds, rejectAd, requestChangesAd } from "@/api/ads-api";
-import { ItemCard } from "@/components/item-card";
 import {
   CategoryFilter,
   PriceRangeFilter,
   StatusFilter,
 } from "@/components/filters";
+import { ItemCard } from "@/components/item-card";
 import { SortFilter } from "@/components/item-sortings";
 import { SearchBar } from "@/components/search-bar";
 import { Button } from "@/components/ui/button";

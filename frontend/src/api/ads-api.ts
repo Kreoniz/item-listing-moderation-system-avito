@@ -28,7 +28,6 @@ export async function getAllAdsIds(
 
 export async function getAd(id: number | string, signal?: AbortSignal) {
   const { data } = await api.get<Advertisement>(`ads/${id}`, { signal });
-  console.log(data);
   return data;
 }
 
