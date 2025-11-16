@@ -1,5 +1,7 @@
 # Проект: Модератор
 
+![Скрин главного экрана](https://github.com/kreoniz/item-listing-moderation-system-avito/raw/main/images/screenshot.png)
+
 Система управления объявлениями для модерации, [тестовое задание на стажировку в Авито](https://github.com/avito-tech/tech-internship/blob/main/Tech%20Internships/Frontend/Frontend-trainee-assignment-autumn-2025/Frontend-trainee-assignment-autumn-2025.md).
 
 ## Оглавление
