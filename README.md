@@ -1,4 +1,4 @@
-# Проект: Модератор
+# Модероратор
 
 ![Скрин главного экрана](https://github.com/kreoniz/item-listing-moderation-system-avito/raw/main/images/screenshot.png)
 
